@@ -4,14 +4,8 @@ import joblib
 import matplotlib.pyplot as plt
 import os
 
-# =======================
-# Streamlit Config (must be first)
-# =======================
 st.set_page_config(page_title="🏡 House Price Prediction", layout="centered")
 
-# =======================
-# Safe Model Loader
-# =======================
 def load_model(filename):
     try:
         if os.path.exists(filename):
@@ -23,22 +17,14 @@ def load_model(filename):
         st.error(f"❌ Could not load {filename}: {e}")
         return None
 
-# Load models
 lin_reg = load_model("Linear_Regression.pkl")
 rf_model = load_model("Random_Forest.pkl")
 gb_model = load_model("Gradient_Boosting.pkl")
 
-# =======================
-# UI Header
-# =======================
 st.title("🏡 House Price Prediction System")
 st.markdown("### Compare predictions from **Linear Regression, Random Forest & Gradient Boosting**")
 
-# =======================
-# Sidebar Input
-# =======================
 st.sidebar.header("Enter House Details")
-
 bedrooms = st.sidebar.slider("Bedrooms", 1, 10, 3)
 bathrooms = st.sidebar.slider("Bathrooms", 1, 5, 2)
 sqft_living = st.sidebar.number_input("Living Area (sq ft)", 300, 10000, 1800)
@@ -54,20 +40,11 @@ years_since_renovation = st.sidebar.number_input("Years Since Renovation", 0, 10
 city_encoded = st.sidebar.number_input("City (Encoded)", 0, 100, 10)
 statezip_encoded = st.sidebar.number_input("StateZip (Encoded)", 0, 50, 5)
 
-# =======================
-# Prepare Features
-# =======================
-features = np.array([[
-    bedrooms, bathrooms, sqft_living, sqft_lot, floors, waterfront, view,
-    condition, sqft_above, sqft_basement, house_age, years_since_renovation,
-    city_encoded, statezip_encoded
-]])
+features = np.array([[bedrooms, bathrooms, sqft_living, sqft_lot, floors, waterfront, view,
+                      condition, sqft_above, sqft_basement, house_age, years_since_renovation,
+                      city_encoded, statezip_encoded]])
 
-# =======================
-# Predictions
-# =======================
 st.subheader("🔮 Predictions")
-
 preds = {}
 if lin_reg:
     preds["Linear Regression"] = lin_reg.predict(features)[0]
@@ -84,18 +61,12 @@ if gb_model:
 if not preds:
     st.error("❌ No models available for prediction. Please check your .pkl files.")
 
-# =======================
-# Comparison Chart
-# =======================
 if preds:
     fig, ax = plt.subplots()
-    ax.bar(preds.keys(), preds.values(), color=["blue","green","orange"][:len(preds)])
+    ax.bar(preds.keys(), preds.values(), color=["blue", "green", "orange"][:len(preds)])
     ax.set_ylabel("Predicted Price ($)")
     ax.set_title("Model Predictions Comparison")
     st.pyplot(fig)
 
-# =======================
-# Footer
-# =======================
 st.markdown("---")
 st.markdown("👨‍💻 **Developed for Internship Task – House Price Prediction**")
